@@ -1,6 +1,6 @@
 # AI Orbit — Company Intelligence
 
-A full-stack company discovery and intelligence module built in the visual language of AI Orbit. The experience is designed around a complete workflow: discover companies, shortlist them, compare market signals, inspect detailed profiles, and save promising companies.
+A database-backed company discovery, intelligence, and editorial operations module built in the visual language of AI Orbit. The complete workflow covers discovery, comparison, company submission, status tracking, verification, and moderation.
 
 ## Features
 
@@ -10,8 +10,13 @@ A full-stack company discovery and intelligence module built in the visual langu
 - Side-by-side comparison workspace for company, funding, product, and market signals
 - Intelligence profiles with products, capabilities, momentum, innovation, enterprise readiness, and related companies
 - Device-local bookmarks and a dedicated saved-companies screen
+- Three-step company submission flow with client and server validation
+- Permanent Supabase PostgreSQL storage with private server-only credentials
+- Unique tracking codes and a privacy-safe public review tracker
+- Protected research dashboard with queue search, status filters, analytics, reviewer notes, approval, and rejection
+- Submission lifecycle: pending → in review → approved or changes requested
 - Loading, empty, error, and not-found states
-- Filtered, paginated, and sortable REST endpoints backed by realistic dummy data
+- Filtered, paginated, sortable, and mutable REST endpoints
 - Keyboard-accessible controls and mobile navigation
 
 ## Routes
@@ -20,9 +25,16 @@ A full-stack company discovery and intelligence module built in the visual langu
 - `/companies/[slug]` — company details
 - `/compare?companies=openai,anthropic` — comparison workspace
 - `/bookmarks` — saved companies
+- `/submit` — multi-step company submission
+- `/track?code=ORB-2026-XXXXXX` — privacy-safe status tracking
+- `/admin` — protected research and moderation console
 - `/api/companies` — searchable/filterable company collection
 - `/api/companies/[slug]` — individual company response
 - `/api/companies/compare?ids=openai,anthropic` — comparison response
+- `POST /api/submissions` — validated submission creation
+- `GET /api/submissions/[tracking]` — public status response
+- `GET /api/submissions` — protected moderation collection
+- `PATCH /api/admin/submissions/[id]` — protected moderation update
 
 ## API examples
 
@@ -33,6 +45,10 @@ GET /api/companies?category=Foundation%20Models&stage=Growth&minScore=90
 GET /api/companies?country=United%20States&sort=score_desc&page=1&limit=6
 GET /api/companies/openai
 GET /api/companies/compare?ids=openai,anthropic,mistral-ai
+POST /api/submissions
+GET /api/submissions/ORB-2026-XXXXXX
+GET /api/submissions                 x-admin-key: your-admin-key
+PATCH /api/admin/submissions/:id    x-admin-key: your-admin-key
 ```
 
 ## Local development
@@ -44,18 +60,34 @@ npm run dev
 
 Open `http://localhost:3000` in your browser.
 
+Without environment variables, the workflow uses a process-local demo store and the admin key `orbit-review-2026`. This is useful for interface testing only; configure Supabase for permanent Vercel storage.
+
+## Supabase setup
+
+1. Create a free Supabase project.
+2. Open **SQL Editor**, paste `supabase/schema.sql`, and run it once.
+3. Open **Project Settings → API** and copy the Project URL and service role key.
+4. Copy `.env.example` to `.env.local` and fill in the three values.
+5. Restart `npm run dev`.
+
+The table has Row Level Security enabled and is accessed only from Next.js server routes with the service role. Never prefix the service role key with `NEXT_PUBLIC_`.
+
 ## Deploy on Vercel
 
 1. Push this project to a GitHub repository.
 2. Import the repository in Vercel.
 3. Keep the detected framework as **Next.js**.
-4. Click **Deploy**. No environment variables are required.
+4. Add `SUPABASE_URL`, `SUPABASE_SECRET_KEY`, and `ADMIN_ACCESS_KEY` under **Project Settings → Environment Variables**.
+5. Deploy or redeploy the latest commit.
 
 ## Implementation notes
 
 - Next.js App Router, React, TypeScript, and REST route handlers
+- Zod schemas shared by server-side validation and typed domain models
+- Supabase PostgREST adapter with a development fallback
+- Protected write APIs with explicit authorization, validation, and status codes
 - Server-rendered comparison and statically generated company profiles
 - Local Storage for bookmarks so the demo works without authentication
 - Responsive layouts and accessible, labelled interactive controls
 
-The project uses dummy data as permitted in the hiring task. Company facts, funding figures, signals, and scores are demonstration content.
+The curated company directory uses realistic dummy data as permitted in the hiring task. Company facts, funding figures, signals, and scores are demonstration content; user submissions are stored separately and moderated through the editorial workflow.

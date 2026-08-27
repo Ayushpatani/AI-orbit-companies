@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, Bookmark, ChevronDown, GitCompareArrows, Grid2X2, List, Menu, Search, SlidersHorizontal, Sparkles, TrendingUp, X } from "lucide-react";
+import { ArrowUpRight, Bookmark, ChevronDown, GitCompareArrows, Grid2X2, List, Menu, Plus, Search, SlidersHorizontal, Sparkles, TrendingUp, X } from "lucide-react";
 import { companies, categories, countries, getIntelligence, stages, type Company } from "@/lib/companies";
 import { Brand, CompanyMark, PrimaryNav } from "@/components/company-ui";
 
@@ -76,7 +76,7 @@ export default function Home() {
         <PrimaryNav mobileOpen={mobileOpen} />
         <div className="header-actions">
           <Link href="/bookmarks" className="saved-link"><Bookmark size={16} /> Saved <span>{saved.length}</span></Link>
-          <Link className="submit-button" href="/compare">Compare companies <GitCompareArrows size={15} /></Link>
+          <Link className="submit-button" href="/submit">Submit company <Plus size={15} /></Link>
           <button className="mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">{mobileOpen ? <X /> : <Menu />}</button>
         </div>
       </header>
@@ -117,7 +117,7 @@ export default function Home() {
 
       {compare.length > 0 && <aside className="compare-tray" aria-label="Comparison shortlist"><div><span><GitCompareArrows size={16} /> COMPARISON SHORTLIST</span><div className="tray-companies">{compare.map((slug) => { const company = companies.find((item) => item.slug === slug)!; return <button key={slug} onClick={() => toggleCompare(slug)}><CompanyMark company={company} /><span>{company.name}</span><X size={13} /></button>; })}{Array.from({ length: 3 - compare.length }).map((_, index) => <div className="empty-slot" key={index}>Add company</div>)}</div></div><div><button onClick={() => setCompare([])} className="tray-clear">Clear</button>{compare.length >= 2 ? <Link href={`/compare?companies=${compare.join(",")}`}>Compare now <ArrowUpRight size={15} /></Link> : <span className="tray-hint">Select one more</span>}</div></aside>}
 
-      <footer><Brand /><p>The home of everything AI.</p><div><span>© 2026 AI Orbit</span><a href="https://aiorbit.club/privacy" target="_blank" rel="noreferrer">Privacy</a><a href="https://aiorbit.club/terms" target="_blank" rel="noreferrer">Terms</a></div></footer>
+      <footer><Brand /><p>The home of everything AI.</p><div><span>© 2026 AI Orbit</span><Link href="/admin">Research admin</Link><a href="/api/companies" target="_blank" rel="noreferrer">API</a></div></footer>
     </div>
   );
 }

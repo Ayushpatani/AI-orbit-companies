@@ -14,8 +14,8 @@ export function PrimaryNav({ mobileOpen = false }: { mobileOpen?: boolean }) {
     <nav className={`main-nav ${mobileOpen ? "nav-open" : ""}`} aria-label="Main navigation">
       <Link href="/">Discover</Link>
       <Link href="/compare">Compare</Link>
-      <Link href="/bookmarks">Saved</Link>
-      <a href="/api/companies" target="_blank" rel="noreferrer">API</a>
+      <Link href="/submit">Submit</Link>
+      <Link href="/track">Track</Link>
     </nav>
   );
 }
