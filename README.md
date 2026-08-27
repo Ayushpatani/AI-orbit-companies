@@ -4,7 +4,7 @@ A complete AI company discovery module inspired by the dark, premium and minimal
 
 ## Live Links
 
-- Live Demo: Add your Vercel link
+- Live Demo: https://ai-orbit-companies.vercel.app/
 - Demo Video: Add your Loom link
 
 ## Features
