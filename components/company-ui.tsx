@@ -12,10 +12,10 @@ export function CompanyMark({ company, large = false }: { company: Company; larg
 export function PrimaryNav({ mobileOpen = false }: { mobileOpen?: boolean }) {
   return (
     <nav className={`main-nav ${mobileOpen ? "nav-open" : ""}`} aria-label="Main navigation">
-      <a href="https://aiorbit.club/tools" target="_blank" rel="noreferrer">Tools</a>
-      <a href="https://aiorbit.club/models" target="_blank" rel="noreferrer">Models</a>
-      <Link href="/" className="active">Companies</Link>
-      <a href="https://aiorbit.club/learn" target="_blank" rel="noreferrer">Resources</a>
+      <Link href="/">Discover</Link>
+      <Link href="/compare">Compare</Link>
+      <Link href="/bookmarks">Saved</Link>
+      <a href="/api/companies" target="_blank" rel="noreferrer">API</a>
     </nav>
   );
 }

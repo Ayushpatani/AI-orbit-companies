@@ -6,6 +6,16 @@ export type Company = {
   products: string[]; focus: string[];
 };
 
+export type CompanyIntelligence = {
+  funding: string;
+  momentum: number;
+  innovation: number;
+  enterprise: number;
+  businessModel: string;
+  deployment: string;
+  signals: string[];
+};
+
 export const companies: Company[] = [
   { id: 1, name: "Anthropic", slug: "anthropic", initials: "A", category: "Foundation Models", stage: "Growth", location: "United States", headquarters: "San Francisco, CA", founded: 2021, employees: "1,000+", website: "anthropic.com", featured: true, verified: true, score: 98, color: "#d97757", shortDescription: "AI safety and research company building reliable, interpretable AI systems.", description: "Anthropic is an AI safety and research company working to build reliable, interpretable, and steerable AI systems. Its interdisciplinary team develops frontier models for individuals and businesses.", products: ["Claude", "Claude API", "Claude for Enterprise"], focus: ["AI Safety", "Large Language Models", "Enterprise AI"] },
   { id: 2, name: "OpenAI", slug: "openai", initials: "O", category: "Foundation Models", stage: "Growth", location: "United States", headquarters: "San Francisco, CA", founded: 2015, employees: "5,000+", website: "openai.com", featured: true, verified: true, score: 100, color: "#7dd3b0", shortDescription: "AI research and deployment company advancing broadly useful intelligence.", description: "OpenAI is an AI research and deployment company. Its work spans multimodal foundation models, developer platforms, and products that help people use advanced AI in everyday work.", products: ["ChatGPT", "OpenAI API", "Codex"], focus: ["Generative AI", "Multimodal Models", "Developer Tools"] },
@@ -23,4 +33,22 @@ export const companies: Company[] = [
 
 export const categories = ["All categories", ...Array.from(new Set(companies.map((company) => company.category)))];
 export const stages = ["All stages", ...Array.from(new Set(companies.map((company) => company.stage)))];
+export const countries = ["All countries", ...Array.from(new Set(companies.map((company) => company.location)))];
 export const getCompany = (slug: string) => companies.find((company) => company.slug === slug);
+
+export const companyIntelligence: Record<string, CompanyIntelligence> = {
+  anthropic: { funding: "$18B+", momentum: 98, innovation: 99, enterprise: 96, businessModel: "API + Subscription", deployment: "Cloud / Enterprise", signals: ["Frontier model releases", "Enterprise adoption", "Safety research leadership"] },
+  openai: { funding: "$60B+", momentum: 100, innovation: 100, enterprise: 99, businessModel: "API + Subscription", deployment: "Cloud / Enterprise", signals: ["Category leader", "Global developer ecosystem", "Multimodal platform expansion"] },
+  "mistral-ai": { funding: "$2B+", momentum: 94, innovation: 96, enterprise: 91, businessModel: "API + Open Models", deployment: "Cloud / Self-hosted", signals: ["European AI leader", "Efficient open models", "Sovereign deployment demand"] },
+  perplexity: { funding: "$1B+", momentum: 97, innovation: 94, enterprise: 86, businessModel: "Subscription + Enterprise", deployment: "Cloud", signals: ["Search behavior shift", "Rapid user growth", "Enterprise research expansion"] },
+  elevenlabs: { funding: "$500M+", momentum: 96, innovation: 95, enterprise: 89, businessModel: "Usage + Subscription", deployment: "Cloud / API", signals: ["Voice quality leadership", "Localization demand", "Conversational agent growth"] },
+  runway: { funding: "$500M+", momentum: 91, innovation: 97, enterprise: 85, businessModel: "Subscription + Enterprise", deployment: "Cloud", signals: ["Generative video adoption", "Studio partnerships", "Creative workflow expansion"] },
+  cohere: { funding: "$1B+", momentum: 88, innovation: 90, enterprise: 96, businessModel: "Enterprise contracts", deployment: "Private / Cloud", signals: ["Private AI demand", "Retrieval leadership", "Regulated-industry adoption"] },
+  "hugging-face": { funding: "$400M+", momentum: 93, innovation: 94, enterprise: 90, businessModel: "Platform + Enterprise", deployment: "Cloud / Self-hosted", signals: ["Open-source network effects", "Model distribution leader", "Developer ecosystem growth"] },
+  "scale-ai": { funding: "$1B+", momentum: 87, innovation: 88, enterprise: 97, businessModel: "Enterprise contracts", deployment: "Managed / Private", signals: ["Evaluation demand", "Government adoption", "Data infrastructure depth"] },
+  synthesia: { funding: "$300M+", momentum: 88, innovation: 89, enterprise: 92, businessModel: "Subscription + Enterprise", deployment: "Cloud", signals: ["Enterprise video adoption", "Training use cases", "Localization expansion"] },
+  groq: { funding: "$1B+", momentum: 95, innovation: 96, enterprise: 88, businessModel: "Usage-based compute", deployment: "Cloud / Hardware", signals: ["Inference speed advantage", "Developer adoption", "Compute diversification"] },
+  suno: { funding: "$250M+", momentum: 92, innovation: 95, enterprise: 72, businessModel: "Freemium subscription", deployment: "Cloud", signals: ["Consumer adoption", "Music creation growth", "Creator workflow expansion"] },
+};
+
+export const getIntelligence = (slug: string) => companyIntelligence[slug];

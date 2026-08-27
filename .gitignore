@@ -35,3 +35,5 @@ yarn-error.log*
 
 # typescript
 next-env.d.ts
+
+.sites-runtime/

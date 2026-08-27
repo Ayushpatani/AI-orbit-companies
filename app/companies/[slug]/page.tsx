@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Building2, CalendarDays, Check, Globe2, MapPin, Users } from "lucide-react";
-import { companies, getCompany } from "@/lib/companies";
+import { companies, getCompany, getIntelligence } from "@/lib/companies";
 import { Brand, CompanyMark, PrimaryNav } from "@/components/company-ui";
+import { CompanyTabs } from "@/components/company-tabs";
 
 export function generateStaticParams() { return companies.map(({ slug }) => ({ slug })); }
 
@@ -10,6 +11,7 @@ export default async function CompanyDetail({ params }: { params: Promise<{ slug
   const { slug } = await params;
   const company = getCompany(slug);
   if (!company) notFound();
+  const intelligence = getIntelligence(slug);
   const related = companies.filter((item) => item.category === company.category && item.slug !== company.slug).slice(0, 3);
 
   return (
@@ -22,11 +24,12 @@ export default async function CompanyDetail({ params }: { params: Promise<{ slug
           <a className="website-button" href={`https://${company.website}`} target="_blank" rel="noreferrer">Visit website <ArrowUpRight size={16} /></a>
         </section>
 
+        <section className="detail-signal-bar"><div><span>ORBIT SCORE</span><strong>{company.score}<small>/100</small></strong></div><div><span>FUNDING SIGNAL</span><strong>{intelligence.funding}</strong></div><div><span>BUSINESS MODEL</span><strong>{intelligence.businessModel}</strong></div><div><span>DEPLOYMENT</span><strong>{intelligence.deployment}</strong></div></section>
+
         <section className="detail-layout">
           <div className="detail-content">
-            <div className="content-block"><span className="section-number">01</span><h2>About</h2><p>{company.description}</p></div>
-            <div className="content-block"><span className="section-number">02</span><h2>Products</h2><div className="product-list">{company.products.map((product, index) => <div key={product}><span>0{index + 1}</span><strong>{product}</strong><ArrowUpRight size={16} /></div>)}</div></div>
-            <div className="content-block"><span className="section-number">03</span><h2>Focus areas</h2><div className="focus-grid">{company.focus.map((item) => <span key={item}>{item}</span>)}</div></div>
+            <CompanyTabs company={company} intelligence={intelligence} />
+            <div className="focus-section"><div><span>CAPABILITY MAP</span><h2>Core focus areas</h2></div><div className="focus-grid">{company.focus.map((item, index) => <span key={item}><small>0{index + 1}</small>{item}</span>)}</div></div>
           </div>
           <aside className="company-facts">
             <div className="facts-title">COMPANY DETAILS</div>
@@ -36,6 +39,7 @@ export default async function CompanyDetail({ params }: { params: Promise<{ slug
               <div><dt><Users size={15} /> Team size</dt><dd>{company.employees}</dd></div>
               <div><dt><Building2 size={15} /> Company stage</dt><dd>{company.stage}</dd></div>
               <div><dt><Globe2 size={15} /> Website</dt><dd>{company.website}</dd></div>
+              <div><dt><TrendingUpIcon /> Funding signal</dt><dd>{intelligence.funding}</dd></div>
             </dl>
             <div className="orbit-score"><div><span>ORBIT SCORE</span><strong>{company.score}</strong></div><div className="score-track"><span style={{ width: `${company.score}%` }} /></div><p>Based on product impact, innovation, and ecosystem presence.</p></div>
           </aside>
@@ -47,3 +51,5 @@ export default async function CompanyDetail({ params }: { params: Promise<{ slug
     </div>
   );
 }
+
+function TrendingUpIcon() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m3 17 6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>; }

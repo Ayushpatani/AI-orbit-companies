@@ -1,51 +1,61 @@
-# AI Orbit Companies
+# AI Orbit — Company Intelligence
 
-A complete AI company discovery module inspired by the dark, premium and minimal design language of AI Orbit.
-
-## Live Links
-
-- Live Demo: https://ai-orbit-companies.vercel.app/
-- Demo Video: Add your Loom link
+A full-stack company discovery and intelligence module built in the visual language of AI Orbit. The experience is designed around a complete workflow: discover companies, shortlist them, compare market signals, inspect detailed profiles, and save promising companies.
 
 ## Features
 
-- Responsive AI companies listing
-- Search companies by name, category or description
-- Filter by company category and stage
-- Sort by featured, newest and alphabetical order
-- Grid and list views
-- Detailed company profiles
-- Bookmark companies
-- Saved Companies page
-- Related company recommendations
-- Loading, empty, error and 404 states
-- REST API endpoints
-- Responsive mobile navigation
-
-## Tech Stack
-
-- Next.js
-- React
-- TypeScript
-- CSS
-- REST APIs
-- Local Storage
-- Vercel
+- Responsive intelligence directory with search, category, stage, and country filters
+- Featured, newest, and alphabetical sorting with grid/list views
+- Shortlist up to three companies from the directory
+- Side-by-side comparison workspace for company, funding, product, and market signals
+- Intelligence profiles with products, capabilities, momentum, innovation, enterprise readiness, and related companies
+- Device-local bookmarks and a dedicated saved-companies screen
+- Loading, empty, error, and not-found states
+- Filtered, paginated, and sortable REST endpoints backed by realistic dummy data
+- Keyboard-accessible controls and mobile navigation
 
 ## Routes
 
-| Route | Description |
-|---|---|
-| `/` | Companies listing |
-| `/companies/[slug]` | Company details |
-| `/bookmarks` | Saved companies |
-| `/api/companies` | All company data |
-| `/api/companies/[slug]` | Individual company data |
+- `/` — company directory
+- `/companies/[slug]` — company details
+- `/compare?companies=openai,anthropic` — comparison workspace
+- `/bookmarks` — saved companies
+- `/api/companies` — searchable/filterable company collection
+- `/api/companies/[slug]` — individual company response
+- `/api/companies/compare?ids=openai,anthropic` — comparison response
 
-## API Examples
+## API examples
 
 ```text
 GET /api/companies
 GET /api/companies?search=voice
-GET /api/companies?category=Foundation%20Models
+GET /api/companies?category=Foundation%20Models&stage=Growth&minScore=90
+GET /api/companies?country=United%20States&sort=score_desc&page=1&limit=6
 GET /api/companies/openai
+GET /api/companies/compare?ids=openai,anthropic,mistral-ai
+```
+
+## Local development
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000` in your browser.
+
+## Deploy on Vercel
+
+1. Push this project to a GitHub repository.
+2. Import the repository in Vercel.
+3. Keep the detected framework as **Next.js**.
+4. Click **Deploy**. No environment variables are required.
+
+## Implementation notes
+
+- Next.js App Router, React, TypeScript, and REST route handlers
+- Server-rendered comparison and statically generated company profiles
+- Local Storage for bookmarks so the demo works without authentication
+- Responsive layouts and accessible, labelled interactive controls
+
+The project uses dummy data as permitted in the hiring task. Company facts, funding figures, signals, and scores are demonstration content.
