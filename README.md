@@ -1,14 +1,15 @@
 # AI Orbit — Company Intelligence
 
-A database-backed company discovery, intelligence, and editorial operations module built in the visual language of AI Orbit. The complete workflow covers discovery, comparison, company submission, status tracking, verification, and moderation.
+A database-backed Companies module closely aligned with AI Orbit's live product structure. It combines the reference directory and profile experience with a complete discovery, comparison, submission, tracking, verification, and moderation workflow.
 
 ## Features
 
-- Responsive intelligence directory with search, category, stage, and country filters
-- Featured, newest, and alphabetical sorting with grid/list views
+- Reference-aligned hero, global search, discovery chips, module rail, category rail, dense company table, pagination, and ecosystem footer
+- Responsive company directory with keyboard search, category filtering, trend filtering, and newest, valuation, and alphabetical sorting
+- Company table fields for country, valuation, funding signal, AI-native status, profitability, sector, models, tools, sharing, and bookmarks
 - Shortlist up to three companies from the directory
 - Side-by-side comparison workspace for company, funding, product, and market signals
-- Intelligence profiles with products, capabilities, momentum, innovation, enterprise readiness, and related companies
+- Reference-aligned profiles with breadcrumb, identity card, follow/bookmark/share actions, company stat strip, ecosystem tabs, and related companies
 - Device-local bookmarks and a dedicated saved-companies screen
 - Three-step company submission flow with client and server validation
 - Permanent Supabase PostgreSQL storage with private server-only credentials
@@ -17,7 +18,7 @@ A database-backed company discovery, intelligence, and editorial operations modu
 - Submission lifecycle: pending → in review → approved or changes requested
 - Loading, empty, error, and not-found states
 - Filtered, paginated, sortable, and mutable REST endpoints
-- Keyboard-accessible controls and mobile navigation
+- Keyboard-accessible controls, Ctrl/Cmd+K search shortcut, responsive tables, and mobile navigation
 
 ## Routes
 

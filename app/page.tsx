@@ -1,123 +1,27 @@
 "use client";
-
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, Bookmark, ChevronDown, GitCompareArrows, Grid2X2, List, Menu, Plus, Search, SlidersHorizontal, Sparkles, TrendingUp, X } from "lucide-react";
-import { companies, categories, countries, getIntelligence, stages, type Company } from "@/lib/companies";
-import { Brand, CompanyMark, PrimaryNav } from "@/components/company-ui";
+import { useEffect,useMemo,useRef,useState } from "react";
+import { Bookmark,Check,Command,Search,Share2 } from "lucide-react";
+import { companies,getIntelligence } from "@/lib/companies";
+import { CompanyMark,OrbitFooter,OrbitHeader } from "@/components/company-ui";
 
-type ViewMode = "grid" | "list";
+const modules=["New","Tools","Agents","Tasks","Companies","News","Videos","Robots","Devices","Models","Repositories","MCP","Personal"];
+const categories=["All","AI Model Providers","Infrastructure","Enterprise","Healthcare","Generative AI","Marketing","Developer Tools","Robotics","Education","Open Source","Finance","AI Native","Model Companies","Unicorns"];
+const trends=["Trending","Popular","New","Free","Top Rated"];
+const stats:Record<string,{valuation:string;native:boolean;profitable:boolean;sector:string;models:number;tools:number}>={
+openai:{valuation:"$300B",native:true,profitable:false,sector:"Generative AI",models:9,tools:7},anthropic:{valuation:"$61.5B",native:true,profitable:false,sector:"AI Model Providers",models:8,tools:4},"mistral-ai":{valuation:"$14B",native:true,profitable:false,sector:"AI Model Providers",models:12,tools:3},perplexity:{valuation:"$18B",native:true,profitable:false,sector:"AI Search",models:0,tools:3},elevenlabs:{valuation:"$6.6B",native:true,profitable:false,sector:"Voice & Audio",models:5,tools:7},runway:{valuation:"$5.3B",native:true,profitable:false,sector:"Generative AI",models:7,tools:5},cohere:{valuation:"$5.5B",native:true,profitable:false,sector:"Enterprise",models:9,tools:4},"hugging-face":{valuation:"$4.5B",native:true,profitable:true,sector:"Developer Tools",models:99,tools:8},"scale-ai":{valuation:"$29B",native:true,profitable:true,sector:"Infrastructure",models:0,tools:6},synthesia:{valuation:"$4B",native:true,profitable:false,sector:"Generative AI",models:3,tools:5},groq:{valuation:"$6.9B",native:true,profitable:false,sector:"Infrastructure",models:0,tools:4},suno:{valuation:"$2.5B",native:true,profitable:false,sector:"Voice & Audio",models:4,tools:2}};
 
-function CompanyCard({ company, view, saved, onSave, comparing, onCompare }: { company: Company; view: ViewMode; saved: boolean; onSave: () => void; comparing: boolean; onCompare: () => void }) {
-  const intelligence = getIntelligence(company.slug);
-  return (
-    <article className={`company-card ${view === "list" ? "company-card-list" : ""}`}>
-      <div className="card-top">
-        <CompanyMark company={company} />
-        <div className="card-actions"><button className={`compare-icon ${comparing ? "is-comparing" : ""}`} onClick={onCompare} aria-label={`${comparing ? "Remove" : "Add"} ${company.name} ${comparing ? "from" : "to"} comparison`}><GitCompareArrows size={16} /></button><button className={`icon-button ${saved ? "is-saved" : ""}`} onClick={onSave} aria-label={saved ? `Remove ${company.name} from bookmarks` : `Bookmark ${company.name}`} title={saved ? "Remove bookmark" : "Bookmark company"}><Bookmark size={17} fill={saved ? "currentColor" : "none"} /></button></div>
-      </div>
-      <div className="card-copy">
-        <div className="company-title-row"><h2>{company.name}</h2>{company.verified && <span className="verified" title="Verified company">✓</span>}</div>
-        <p>{company.shortDescription}</p>
-      </div>
-      <div className="tag-row"><span>{company.category}</span><span>{company.stage}</span><span className="momentum-tag"><TrendingUp size={10} /> {intelligence.momentum}</span></div>
-      <div className="card-meta"><span>{company.location}</span><span className="dot" /><span>Founded {company.founded}</span></div>
-      <Link className="card-link" href={`/companies/${company.slug}`}>View company <ArrowUpRight size={16} /></Link>
-    </article>
-  );
-}
-
-export default function Home() {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All categories");
-  const [stage, setStage] = useState("All stages");
-  const [country, setCountry] = useState("All countries");
-  const [sort, setSort] = useState("Featured");
-  const [view, setView] = useState<ViewMode>("grid");
-  const [saved, setSaved] = useState<string[]>([]);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [compare, setCompare] = useState<string[]>([]);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      const value = localStorage.getItem("orbit-company-bookmarks");
-      if (value) setSaved(JSON.parse(value));
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  const filtered = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    const result = companies.filter((company) => {
-      const matchesQuery = !normalized || company.name.toLowerCase().includes(normalized) || company.shortDescription.toLowerCase().includes(normalized) || company.category.toLowerCase().includes(normalized);
-      return matchesQuery && (category === "All categories" || company.category === category) && (stage === "All stages" || company.stage === stage) && (country === "All countries" || company.location === country);
-    });
-    return [...result].sort((a, b) => sort === "A–Z" ? a.name.localeCompare(b.name) : sort === "Newest" ? b.founded - a.founded : Number(b.featured) - Number(a.featured) || b.score - a.score);
-  }, [query, category, stage, country, sort]);
-
-  function toggleSave(slug: string) {
-    setSaved((current) => {
-      const next = current.includes(slug) ? current.filter((item) => item !== slug) : [...current, slug];
-      localStorage.setItem("orbit-company-bookmarks", JSON.stringify(next));
-      return next;
-    });
-  }
-
-  function toggleCompare(slug: string) { setCompare((current) => current.includes(slug) ? current.filter((item) => item !== slug) : current.length < 3 ? [...current, slug] : current); }
-  function clearFilters() { setQuery(""); setCategory("All categories"); setStage("All stages"); setCountry("All countries"); setSort("Featured"); }
-  const hasFilters = Boolean(query || category !== "All categories" || stage !== "All stages" || country !== "All countries");
-  const averageScore = Math.round(companies.reduce((total, company) => total + company.score, 0) / companies.length);
-
-  return (
-    <div className="site-shell">
-      <header className="site-header">
-        <Brand />
-        <PrimaryNav mobileOpen={mobileOpen} />
-        <div className="header-actions">
-          <Link href="/bookmarks" className="saved-link"><Bookmark size={16} /> Saved <span>{saved.length}</span></Link>
-          <Link className="submit-button" href="/submit">Submit company <Plus size={15} /></Link>
-          <button className="mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">{mobileOpen ? <X /> : <Menu />}</button>
-        </div>
-      </header>
-
-      <main>
-        <section className="directory-intro">
-          <div><div className="eyebrow"><Sparkles size={14} /> AI MARKET INTELLIGENCE</div><h1>Discover who is<br />shaping AI next.</h1></div>
-          <p>Research, shortlist, and compare the companies defining the global AI market—all in one decision workspace.</p>
-        </section>
-
-        <section className="market-strip" aria-label="Directory overview">
-          <div><span>INDEXED COMPANIES</span><strong>{companies.length}</strong><small>Curated market leaders</small></div>
-          <div><span>MARKET CATEGORIES</span><strong>{categories.length - 1}</strong><small>Across the AI stack</small></div>
-          <div><span>COUNTRIES</span><strong>{countries.length - 1}</strong><small>Global ecosystem coverage</small></div>
-          <div><span>AVERAGE ORBIT SCORE</span><strong>{averageScore}</strong><small>Quality-weighted index</small></div>
-        </section>
-
-        <section className="directory-panel">
-          <div className="search-row">
-            <label className="search-box"><Search size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search companies, categories, or products..." aria-label="Search companies" />{query && <button onClick={() => setQuery("")} aria-label="Clear search"><X size={16} /></button>}</label>
-            <button className={`filter-toggle ${showFilters ? "active" : ""}`} onClick={() => setShowFilters(!showFilters)}><SlidersHorizontal size={17} /> Filters <ChevronDown size={15} /></button>
-          </div>
-
-          <div className={`filter-row ${showFilters ? "show-mobile-filters" : ""}`}>
-            <div className="filter-controls">
-              <select className="orbit-select" aria-label="Filter by category" value={category} onChange={(event) => setCategory(event.target.value)}>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</select>
-              <select className="orbit-select" aria-label="Filter by stage" value={stage} onChange={(event) => setStage(event.target.value)}>{stages.map((item) => <option key={item} value={item}>{item}</option>)}</select>
-              <select className="orbit-select" aria-label="Filter by country" value={country} onChange={(event) => setCountry(event.target.value)}>{countries.map((item) => <option key={item} value={item}>{item}</option>)}</select>
-              {hasFilters && <button className="clear-button" onClick={clearFilters}>Clear all <X size={14} /></button>}
-            </div>
-            <div className="view-controls"><span>Sort</span><select className="sort-select" aria-label="Sort companies" value={sort} onChange={(event) => setSort(event.target.value)}>{["Featured", "Newest", "A–Z"].map((item) => <option key={item} value={item}>{item}</option>)}</select><div className="view-switch" aria-label="View mode"><button className={view === "grid" ? "active" : ""} onClick={() => setView("grid")} aria-label="Grid view"><Grid2X2 size={16} /></button><button className={view === "list" ? "active" : ""} onClick={() => setView("list")} aria-label="List view"><List size={18} /></button></div></div>
-          </div>
-
-          <div className="results-heading"><div><strong>{filtered.length}</strong> companies</div>{hasFilters && <span>Filtered results</span>}</div>
-          {filtered.length ? <div className={`company-grid ${view === "list" ? "list-view" : ""}`}>{filtered.map((company) => <CompanyCard key={company.slug} company={company} view={view} saved={saved.includes(company.slug)} onSave={() => toggleSave(company.slug)} comparing={compare.includes(company.slug)} onCompare={() => toggleCompare(company.slug)} />)}</div> : <div className="empty-state"><span><Search size={24} /></span><h2>No companies found</h2><p>Try a different search or remove some filters.</p><button onClick={clearFilters}>Clear all filters</button></div>}
-        </section>
-      </main>
-
-      {compare.length > 0 && <aside className="compare-tray" aria-label="Comparison shortlist"><div><span><GitCompareArrows size={16} /> COMPARISON SHORTLIST</span><div className="tray-companies">{compare.map((slug) => { const company = companies.find((item) => item.slug === slug)!; return <button key={slug} onClick={() => toggleCompare(slug)}><CompanyMark company={company} /><span>{company.name}</span><X size={13} /></button>; })}{Array.from({ length: 3 - compare.length }).map((_, index) => <div className="empty-slot" key={index}>Add company</div>)}</div></div><div><button onClick={() => setCompare([])} className="tray-clear">Clear</button>{compare.length >= 2 ? <Link href={`/compare?companies=${compare.join(",")}`}>Compare now <ArrowUpRight size={15} /></Link> : <span className="tray-hint">Select one more</span>}</div></aside>}
-
-      <footer><Brand /><p>The home of everything AI.</p><div><span>© 2026 AI Orbit</span><Link href="/admin">Research admin</Link><a href="/api/companies" target="_blank" rel="noreferrer">API</a></div></footer>
-    </div>
-  );
+export default function Home(){
+const[query,setQuery]=useState("");const[category,setCategory]=useState("All");const[sort,setSort]=useState("Newest");const[saved,setSaved]=useState<string[]>([]);const[trend,setTrend]=useState("");const[page,setPage]=useState(1);const[toast,setToast]=useState("");const searchRef=useRef<HTMLInputElement>(null);const pageSize=8;
+useEffect(()=>{const timer=window.setTimeout(()=>{try{setSaved(JSON.parse(localStorage.getItem("orbit-company-bookmarks")||"[]"));}catch{}},0);return()=>window.clearTimeout(timer);},[]);
+useEffect(()=>{function shortcut(event:KeyboardEvent){if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==="k"){event.preventDefault();searchRef.current?.focus();}}window.addEventListener("keydown",shortcut);return()=>window.removeEventListener("keydown",shortcut)},[]);
+const filtered=useMemo(()=>companies.filter(c=>{const q=query.toLowerCase(),s=stats[c.slug];return(!q||`${c.name} ${c.description} ${c.products.join(" ")}`.toLowerCase().includes(q))&&(category==="All"||category===s.sector||category===c.category||(category==="AI Native"&&s.native));}).sort((a,b)=>trend==="Trending"?getIntelligence(b.slug).momentum-getIntelligence(a.slug).momentum:trend==="Popular"||trend==="Top Rated"?b.score-a.score:sort==="A–Z"?a.name.localeCompare(b.name):sort==="Valuation"?Number(stats[b.slug].valuation.replace(/[^0-9.]/g,""))-Number(stats[a.slug].valuation.replace(/[^0-9.]/g,"")):b.founded-a.founded),[query,category,sort,trend]);
+const pages=Math.max(1,Math.ceil(filtered.length/pageSize));const visible=filtered.slice((page-1)*pageSize,page*pageSize);
+function toggle(slug:string){setSaved(current=>{const next=current.includes(slug)?current.filter(x=>x!==slug):[...current,slug];localStorage.setItem("orbit-company-bookmarks",JSON.stringify(next));return next;});}
+async function share(name:string,slug:string){const url=`${location.origin}/companies/${slug}`;try{if(navigator.share)await navigator.share({title:name,url});else{await navigator.clipboard.writeText(url);setToast("Company link copied");window.setTimeout(()=>setToast(""),1800)}}catch{}}
+function selectTrend(value:string){setTrend(current=>current===value?"":value);setPage(1)}
+return <div className="reference-home"><OrbitHeader/><section className="orbit-hero"><h1>The Home of Everything AI</h1><label className="orbit-global-search"><Search size={17}/><input ref={searchRef} value={query} onChange={e=>{setQuery(e.target.value);setPage(1)}} placeholder="Search AI tools, models, companies..."/><span><Command size={12}/> K</span></label><div className="orbit-trends">{trends.map(x=><button key={x} className={trend===x?"active":""} onClick={()=>selectTrend(x)}>{x}</button>)}</div></section>
+<main className="orbit-directory-main"><div className="orbit-sort"><span>Sort by</span><select value={sort} onChange={e=>{setSort(e.target.value);setTrend("");setPage(1)}}><option>Newest</option><option>Valuation</option><option>A–Z</option></select></div><nav className="orbit-module-rail">{modules.map(x=><a key={x} className={x==="Companies"?"active":""} href={x==="Companies"?"/":`https://aiorbit.club/${x.toLowerCase()}`}><i>{x.slice(0,1)}</i>{x}</a>)}</nav><div className="orbit-category-rail">{categories.map(x=><button key={x} className={category===x?"active":""} onClick={()=>{setCategory(x);setPage(1)}}>{x}</button>)}</div>
+<div className="orbit-table-wrap"><div className="orbit-company-table" role="table"><div className="orbit-table-head" role="row"><span>COMPANY ↕</span><span>COUNTRY</span><span>VALUATION ↓</span><span>VAL/EMP ↕</span><span>AI NATIVE ↕</span><span>PROFITABLE ↕</span><span>SECTOR ↕</span><span>MODELS ↕</span><span>TOOLS ↕</span><span>SHARE</span><span>BOOKMARK</span></div>{visible.map(company=>{const s=stats[company.slug],intel=getIntelligence(company.slug);return <div className="orbit-company-row" role="row" key={company.slug}><Link className="orbit-company-cell" href={`/companies/${company.slug}`}><CompanyMark company={company}/><span><strong>{company.name}{company.verified&&<b><Check size={9}/></b>}</strong><small>{company.products.slice(0,2).map(p=><em key={p}>{p}</em>)}</small></span></Link><span>{company.location}</span><strong>{s.valuation}</strong><span>{intel.funding}</span><span className="yes"><Check size={10}/> YES</span><span className={s.profitable?"yes":"no"}>{s.profitable?<><Check size={10}/> YES</>:"NO"}</span><span>{s.sector}</span><strong>{s.models}</strong><strong>{s.tools}</strong><button className="orbit-round-action" onClick={()=>share(company.name,company.slug)} aria-label={`Share ${company.name}`}><Share2 size={14}/></button><button className={`orbit-round-action ${saved.includes(company.slug)?"saved":""}`} onClick={()=>toggle(company.slug)} aria-label={`Bookmark ${company.name}`}><Bookmark size={14} fill={saved.includes(company.slug)?"currentColor":"none"}/></button></div>})}</div></div>
+{!filtered.length&&<div className="orbit-empty"><Search/><h2>No companies found</h2><button onClick={()=>{setQuery("");setCategory("All")}}>Clear filters</button></div>}<div className="orbit-pagination"><span>Showing {filtered.length?(page-1)*pageSize+1:0}–{Math.min(page*pageSize,filtered.length)} of {filtered.length} companies</span><div><button disabled={page===1} onClick={()=>setPage(x=>Math.max(1,x-1))}>‹</button>{Array.from({length:pages},(_,i)=>i+1).map(number=><button key={number} className={page===number?"active":""} onClick={()=>setPage(number)}>{number}</button>)}<button disabled={page===pages} onClick={()=>setPage(x=>Math.min(pages,x+1))}>›</button></div></div></main>{toast&&<div className="orbit-toast">{toast}</div>}<OrbitFooter/></div>;
 }
